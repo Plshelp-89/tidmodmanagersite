@@ -1,10 +1,11 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TLD Mods — Моды для The Long Drive</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Clerk -->
     <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
     <!-- Firebase -->
     <script type="module">
@@ -89,6 +90,20 @@
                     <input type="hidden" id="editModId">
                     <button type="submit" id="submitModBtn" class="btn btn-download">ЗАГРУЗИТЬ МОД</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Cookie Consent Banner -->
+        <div id="cookieBanner" class="cookie-banner" style="display: none;">
+            <div class="cookie-content">
+                <div class="cookie-text">
+                    <h3>🍪 Мы используем файлы cookie</h3>
+                    <p>Продолжая использовать сайт, вы соглашаетесь с обработкой cookie в соответствии с нашей политикой.</p>
+                </div>
+                <div class="cookie-buttons">
+                    <button id="acceptCookies" class="btn btn-accept">ПРИНЯТЬ</button>
+                    <button id="declineCookies" class="btn btn-decline">ОТКЛОНИТЬ</button>
+                </div>
             </div>
         </div>
 

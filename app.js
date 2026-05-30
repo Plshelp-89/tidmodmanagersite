@@ -13,6 +13,7 @@ const { initializeApp, getFirestore, collection, addDoc, getDocs, deleteDoc, doc
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const modsCollection = collection(db, "mods");
+const bannedCollection = collection(db, "bannedUsers");
 
 // Clerk
 const clerk = new Clerk('pk_test_ZmFpci1mZXJyZXQtMC5jbGVyay5hY2NvdW50cy5kZXYk');
@@ -27,7 +28,7 @@ async function loadModsFromFirestore() {
     const q = query(modsCollection, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
     allMods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderMods();
+    await renderMods();
     updateStats();
 }
 
@@ -47,9 +48,21 @@ async function deleteModFromFirestore(modId) {
     await deleteDoc(doc(db, "mods", modId));
 }
 
-// Рендер карточек
-function renderMods() {
+// Проверка, забанен ли пользователь
+async function isUserBanned(userId) {
+    if (!userId) return false;
+    const snapshot = await getDocs(bannedCollection);
+    const bannedIds = snapshot.docs.map(doc => doc.data().userId);
+    return bannedIds.includes(userId);
+}
+
+// Рендер карточек (с фильтрацией забаненных)
+async function renderMods() {
+    const bannedSnapshot = await getDocs(bannedCollection);
+    const bannedIds = bannedSnapshot.docs.map(doc => doc.data().userId);
+
     const filtered = allMods.filter(m => {
+        if (bannedIds.includes(m.userId)) return false; // скрыть моды забаненных
         const matchCat = currentCategory === 'all' || m.category === currentCategory;
         const matchSearch = m.name.toLowerCase().includes(currentSearch.toLowerCase());
         return matchCat && matchSearch;
@@ -157,6 +170,10 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!clerk.user) {
         alert('Войдите, чтобы загружать или редактировать моды');
+        return;
+    }
+    if (await isUserBanned(clerk.user.id)) {
+        alert('Вы заблокированы и не можете загружать моды.');
         return;
     }
     const modData = {

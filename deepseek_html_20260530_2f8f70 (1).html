@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLD Mods — Моды для The Long Drive</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Clerk -->
+    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+        window.firebaseModules = { initializeApp, getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="logo">
+                    <h1>🚚 TLD <span class="accent">MODS</span></h1>
+                    <p class="tagline">Крупнейший архив модов для The Long Drive</p>
+                </div>
+                <div class="header-right">
+                    <div class="stats">
+                        <div class="stat"><span id="modsCount">0</span> модов</div>
+                        <div class="stat"><span id="catsCount">0</span> категорий</div>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Поиск по названию..." oninput="filterMods()">
+                    </div>
+                    <div id="auth-area">
+                        <button id="signInBtn" class="btn btn-neon">ВОЙТИ / РЕГИСТРАЦИЯ</button>
+                        <div id="userArea" style="display:none;">
+                            <span id="userName"></span>
+                            <button id="uploadBtn" class="btn btn-upload">ЗАЛИТЬ МОД</button>
+                            <button id="logoutBtn" class="btn btn-logout">ВЫЙТИ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="categories-bar">
+            <button class="cat-btn active" data-category="all">Все</button>
+            <button class="cat-btn" data-category="gameplay">Геймплей</button>
+            <button class="cat-btn" data-category="graphics">Графика</button>
+            <button class="cat-btn" data-category="vehicles">Транспорт</button>
+            <button class="cat-btn" data-category="weapons">Оружие</button>
+            <button class="cat-btn" data-category="cheats">Читы</button>
+            <button class="cat-btn" data-category="other">Другое</button>
+        </nav>
+
+        <main>
+            <div id="modsGrid" class="mods-grid"></div>
+            <div id="noMods" class="no-mods" style="display:none;">
+                <div class="empty-state">
+                    <span class="icon">📭</span>
+                    <h2>Моды не найдены</h2>
+                    <p>Попробуйте изменить запрос или добавьте первый мод!</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Модальное окно загрузки / редактирования -->
+        <div id="uploadModal" class="modal">
+            <div class="modal-content animate-pop">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">📤 Загрузить новый мод</h2>
+                <form id="uploadForm">
+                    <input type="text" id="modName" placeholder="Название мода" required>
+                    <textarea id="modDesc" placeholder="Описание мода" required></textarea>
+                    <div class="row">
+                        <input type="text" id="modAuthor" placeholder="Автор">
+                        <input type="text" id="modVersion" placeholder="Версия (1.0.0)">
+                    </div>
+                    <input type="url" id="modDownload" placeholder="Ссылка на скачивание" required>
+                    <input type="url" id="modImage" placeholder="Ссылка на изображение (необязательно)">
+                    <input type="url" id="modMirror" placeholder="Ссылка на зеркало (необязательно)">
+                    <select id="modCategory" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="gameplay">Геймплей</option>
+                        <option value="graphics">Графика</option>
+                        <option value="vehicles">Транспорт</option>
+                        <option value="weapons">Оружие</option>
+                        <option value="cheats">Читы</option>
+                        <option value="other">Другое</option>
+                    </select>
+                    <input type="hidden" id="editModId">
+                    <button type="submit" id="submitModBtn" class="btn btn-download">ЗАГРУЗИТЬ МОД</button>
+                </form>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024-2026 TLD Mods. Все права защищены. Неофициальный архив.</p>
+            <p class="disclaimer">Моды загружаются пользователями. Администрация не несёт ответственности за их содержимое.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
